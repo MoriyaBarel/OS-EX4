@@ -1,15 +1,11 @@
-
 #include <iostream>
-#include <string>
-
-using namespace std;
 
 namespace ex4
 {
     class Node
     {
     public:
-        string data;
+        std::string data;
         Node *next;
     };
 
@@ -22,7 +18,7 @@ namespace ex4
     public:
         Stack();
         ~Stack();
-        void PUSH(string val);
+        void PUSH(std::string val);
         void POP();
         void TOP();
     };

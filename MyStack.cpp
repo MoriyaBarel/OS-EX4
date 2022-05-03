@@ -61,12 +61,3 @@ void ex4::Stack::TOP()
     }
     pthread_mutex_unlock(&mutex);
 }
-
-// int main() {
-//     ex4::Stack s;
-//     s.PUSH("hi");
-//     s.TOP();
-//     s.POP();
-//     s.TOP();
-    
-// }

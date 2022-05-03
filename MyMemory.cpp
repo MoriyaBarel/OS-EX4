@@ -1,18 +1,26 @@
 #include <iostream>
 #include <unistd.h>
 #include "string.h"
+#include "MyMemory.hpp"
+#include <pthread.h>
 
-typedef struct free_block
-{
-    size_t size;
-    struct free_block *next;
-} free_block;
+pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+
+using namespace ex4;
 
 static free_block free_block_list_head = {0, 0};
 static const size_t overhead = sizeof(size_t);
 static const size_t align_to = 16;
 
-void *malloc1(size_t size)
+void *MyMemory::my_malloc(size_t size)
+{
+    pthread_mutex_lock(&mutex);
+    void *to_return = my_malloc_helper(size);
+    pthread_mutex_unlock(&mutex);
+    return to_return;
+}
+
+void *MyMemory::my_malloc_helper(size_t size)
 {
     size = (size + sizeof(size_t) + (align_to - 1)) & ~(align_to - 1);
     free_block *block = free_block_list_head.next;
@@ -34,24 +42,33 @@ void *malloc1(size_t size)
     return ((char *)block) + sizeof(size_t);
 }
 
-void free1(void *ptr)
+void MyMemory::my_free(void *ptr)
+{
+    pthread_mutex_lock(&mutex);
+    my_free_helper(ptr);
+    pthread_mutex_unlock(&mutex);
+}
+void MyMemory::my_free_helper(void *ptr)
 {
     free_block *block = (free_block *)(((char *)ptr) - sizeof(size_t));
     block->next = free_block_list_head.next;
     free_block_list_head.next = block;
 }
-void *calloc1(size_t n, size_t size)
+
+void *MyMemory::my_calloc(size_t n, size_t size)
 {
-	size_t total = n * size;
-	void *p = malloc1(total);
-	
-	if (!p) return NULL;
-	
-	return memset(p, 0, total);
+    pthread_mutex_lock(&mutex);
+    void *to_return = my_calloc_helper(n, size);
+    pthread_mutex_unlock(&mutex);
+    return to_return;
 }
+void *MyMemory::my_calloc_helper(size_t n, size_t size)
+{
+    size_t total = n * size;
+    void *p = MyMemory::my_malloc(total);
 
+    if (!p)
+        return NULL;
 
-
-
-
-
+    return memset(p, 0, total);
+}
