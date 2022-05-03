@@ -40,7 +40,15 @@ void free1(void *ptr)
     block->next = free_block_list_head.next;
     free_block_list_head.next = block;
 }
-
+void *calloc1(size_t n, size_t size)
+{
+	size_t total = n * size;
+	void *p = malloc1(total);
+	
+	if (!p) return NULL;
+	
+	return memset(p, 0, total);
+}
 
 
 
