@@ -9,17 +9,16 @@ namespace ex4
         Node *next;
     };
 
-    class Stack
+    class MyStack
     {
 
     private:
         Node *head;
 
     public:
-        Stack();
-        ~Stack();
+        MyStack();
         void PUSH(std::string val);
         void POP();
-        void TOP();
+        std::string TOP();
     };
 }

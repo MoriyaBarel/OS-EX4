@@ -1,63 +1,60 @@
 #include <iostream>
 #include <pthread.h>
 #include "MyStack.hpp"
+#include "MyMemory.hpp"
 using namespace std;
 
-pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t stack_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-ex4::Stack::Stack()
+ex4::MyStack::MyStack()
 {
-    this->head = new ex4::Node();
-    this->head = NULL;
+    ex4::Node *p = NULL;
+    this->head = p;
 }
 
-ex4::Stack::~Stack()
+void ex4::MyStack::PUSH(string val)
 {
-    ex4::Node *curr = this->head;
-    Node *prev = NULL;
-    while (curr != NULL)
-    {
-        prev = curr;
-        curr = curr->next;
-        delete prev;
-    }
-}
-
-void ex4::Stack::PUSH(string val)
-{
-    pthread_mutex_lock(&mutex);
+    pthread_mutex_lock(&stack_mutex);
     if (val.size() > 1024)
     {
-        throw ::invalid_argument("ERROR: string size has to be less then 1025.");
-        pthread_mutex_unlock(&mutex);
+        pthread_mutex_unlock(&stack_mutex);
+        throw ::invalid_argument("DEBUG:string size has to be less then 1025.");
     }
-    ex4::Node *newnode = (ex4::Node *)malloc(sizeof(ex4::Node));
+    ex4::Node *newnode = (ex4::Node *)MyMemory::my_malloc(sizeof(ex4::Node));
     newnode->data = val;
     newnode->next = this->head;
     this->head = newnode;
-    pthread_mutex_unlock(&mutex);
+    pthread_mutex_unlock(&stack_mutex);
 }
 
-void ex4::Stack::POP()
+void ex4::MyStack::POP()
 {
-    pthread_mutex_lock(&mutex);
+    pthread_mutex_lock(&stack_mutex);
     if (this->head == NULL)
-        cout << "Stack is empty." << endl;
+        cout << "DEBUG:stack is empty." << endl;
     else
     {
+        ex4::Node *temp = this->head;
+        temp->data = this->head->data;
         this->head = this->head->next;
+        MyMemory::my_free(temp);
     }
-    pthread_mutex_unlock(&mutex);
+    pthread_mutex_unlock(&stack_mutex);
 }
 
-void ex4::Stack::TOP()
+std::string ex4::MyStack::TOP()
 {
-    pthread_mutex_lock(&mutex);
+    std::string ans;
+    pthread_mutex_lock(&stack_mutex);
     if (this->head == NULL)
-        cout << "Stack is empty.";
+    {
+        pthread_mutex_unlock(&stack_mutex);
+        return "DEBUG:Stack is empty.";
+    }
     else
     {
-        cout << "OUTPUT: " << this->head->data << endl;
+        std::string ans = "OUTPUT:" + this->head->data;
+        pthread_mutex_unlock(&stack_mutex);
+        return ans;
     }
-    pthread_mutex_unlock(&mutex);
 }

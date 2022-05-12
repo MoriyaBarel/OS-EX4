@@ -1,10 +1,10 @@
 #include <iostream>
 #include <unistd.h>
-#include "string.h"
-#include "MyMemory.hpp"
+#include <string.h>
 #include <pthread.h>
+#include "MyMemory.hpp"
 
-pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t mem_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 using namespace ex4;
 
@@ -14,9 +14,9 @@ static const size_t align_to = 16;
 
 void *MyMemory::my_malloc(size_t size)
 {
-    pthread_mutex_lock(&mutex);
+    pthread_mutex_lock(&mem_mutex);
     void *to_return = my_malloc_helper(size);
-    pthread_mutex_unlock(&mutex);
+    pthread_mutex_unlock(&mem_mutex);
     return to_return;
 }
 
@@ -44,10 +44,11 @@ void *MyMemory::my_malloc_helper(size_t size)
 
 void MyMemory::my_free(void *ptr)
 {
-    pthread_mutex_lock(&mutex);
+    pthread_mutex_lock(&mem_mutex);
     my_free_helper(ptr);
-    pthread_mutex_unlock(&mutex);
+    pthread_mutex_unlock(&mem_mutex);
 }
+
 void MyMemory::my_free_helper(void *ptr)
 {
     free_block *block = (free_block *)(((char *)ptr) - sizeof(size_t));
@@ -57,11 +58,12 @@ void MyMemory::my_free_helper(void *ptr)
 
 void *MyMemory::my_calloc(size_t n, size_t size)
 {
-    pthread_mutex_lock(&mutex);
+    pthread_mutex_lock(&mem_mutex);
     void *to_return = my_calloc_helper(n, size);
-    pthread_mutex_unlock(&mutex);
+    pthread_mutex_unlock(&mem_mutex);
     return to_return;
 }
+
 void *MyMemory::my_calloc_helper(size_t n, size_t size)
 {
     size_t total = n * size;
