@@ -22,7 +22,7 @@
 #include "MyStack.hpp"
 #include "MyMemory.hpp"
 
-#define PORT "3496" // the port users will be connecting to
+#define PORT "3444" // the port users will be connecting to
 
 #define BACKLOG 10 // how many pending connections queue will hold
 
@@ -71,13 +71,14 @@ void *T_FUNCTION(void *new_fdcl)
     int check;
     while (true)
     {
-        input = (char *)calloc(buf_size, sizeof(char));
-        // if ((check = recv(th_cl, input, 1024, 0) != -1) && length > 0 && input[0] != '\n' && input[0] != EOF)
+        input = (char *)ex4::MyMemory::my_calloc(buf_size, sizeof(char));
         if (recv(th_cl, input, buf_size, 0) != 0)
         {
             if (prefix("PUSH", input))
             {
-                server_stack.PUSH(input);
+                char* substr = (char*)ex4::MyMemory::my_malloc(strlen(input));
+                strncpy(substr, input+4, strlen(input)-4);
+                server_stack.PUSH(substr);
             }
             else if (prefix("POP", input))
             {
@@ -91,6 +92,8 @@ void *T_FUNCTION(void *new_fdcl)
             {
                 ex4::MyMemory::my_free(input);
                 break;
+            }else {
+                std::cout <<"receive : " << input <<std::endl ;
             }
         }
             

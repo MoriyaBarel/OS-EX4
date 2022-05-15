@@ -13,8 +13,10 @@
 #include <sys/socket.h>
 #include <pthread.h>
 #include <arpa/inet.h>
+#include "MyMemory.hpp"
+using namespace ex4;
 
-#define PORT "3496" // the port client will be connecting to 
+#define PORT "3490" // the port client will be connecting to 
 
 #define MAXDATASIZE 100 // max number of bytes we can get at once 
 
@@ -55,7 +57,7 @@ void *T_FUNCTION(void* sockfd)
     int i_sockfd = *(int *)sockfd;
     while(true)
     {
-        input = (char*)calloc(buf_size, sizeof(char));
+        input = (char*)ex4::MyMemory::my_calloc(buf_size, sizeof(char));
         getline(&input, &buf_size, stdin);
         
         send(i_sockfd, input, buf_size, 0);

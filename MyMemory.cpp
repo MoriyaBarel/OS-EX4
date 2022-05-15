@@ -56,15 +56,9 @@ void MyMemory::my_free_helper(void *ptr)
     free_block_list_head.next = block;
 }
 
-void *MyMemory::my_calloc(size_t n, size_t size)
-{
-    pthread_mutex_lock(&mem_mutex);
-    void *to_return = my_calloc_helper(n, size);
-    pthread_mutex_unlock(&mem_mutex);
-    return to_return;
-}
 
-void *MyMemory::my_calloc_helper(size_t n, size_t size)
+
+void *MyMemory::my_calloc(size_t n, size_t size)
 {
     size_t total = n * size;
     void *p = MyMemory::my_malloc(total);
