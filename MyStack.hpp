@@ -1,11 +1,14 @@
 #include <iostream>
+#include <pthread.h>
+#include <unistd.h>
+#include "MyMemory.hpp"
 
 namespace ex4
 {
     class Node
     {
     public:
-        std::string data;
+        char* data;
         Node *next;
     };
 
@@ -17,8 +20,8 @@ namespace ex4
 
     public:
         MyStack();
-        void PUSH(std::string val);
+        void PUSH(char* val);
         void POP();
-        std::string TOP();
+        char* TOP();
     };
 }

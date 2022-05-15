@@ -20,9 +20,8 @@
 
 #include <pthread.h>
 #include "MyStack.hpp"
-#include "MyMemory.hpp"
 
-#define PORT "3444" // the port users will be connecting to
+#define PORT "3511" // the port users will be connecting to
 
 #define BACKLOG 10 // how many pending connections queue will hold
 
@@ -92,6 +91,7 @@ void *T_FUNCTION(void *new_fdcl)
             {
                 ex4::MyMemory::my_free(input);
                 break;
+
             }else {
                 std::cout <<"receive : " << input <<std::endl ;
             }

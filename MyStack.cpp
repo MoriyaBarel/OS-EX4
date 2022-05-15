@@ -1,7 +1,7 @@
 #include <iostream>
 #include <pthread.h>
+#include <string.h>
 #include "MyStack.hpp"
-#include "MyMemory.hpp"
 using namespace std;
 
 pthread_mutex_t stack_mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -12,16 +12,17 @@ ex4::MyStack::MyStack()
     this->head = p;
 }
 
-void ex4::MyStack::PUSH(string val)
+void ex4::MyStack::PUSH(char *val)
 {
     pthread_mutex_lock(&stack_mutex);
-    if (val.size() > 1024)
+    if (strlen(val) > 1024)
     {
         pthread_mutex_unlock(&stack_mutex);
         throw ::invalid_argument("DEBUG:string size has to be less then 1025.");
     }
     ex4::Node *newnode = (ex4::Node *)MyMemory::my_malloc(sizeof(ex4::Node));
-    newnode->data = val;
+    newnode->data = (char *)MyMemory::my_malloc(strlen(val) + 1);
+    strcpy(newnode->data, val);
     newnode->next = this->head;
     this->head = newnode;
     pthread_mutex_unlock(&stack_mutex);
@@ -35,25 +36,28 @@ void ex4::MyStack::POP()
     else
     {
         ex4::Node *temp = this->head;
-        temp->data = this->head->data;
         this->head = this->head->next;
+        MyMemory::my_free(temp->data);
         MyMemory::my_free(temp);
     }
     pthread_mutex_unlock(&stack_mutex);
 }
 
-std::string ex4::MyStack::TOP()
+char *ex4::MyStack::TOP()
 {
-    std::string ans;
     pthread_mutex_lock(&stack_mutex);
     if (this->head == NULL)
     {
+        char *ans = (char *)MyMemory::my_malloc(25);
+        strcpy(ans, "DEBUG:Stack is empty.");
         pthread_mutex_unlock(&stack_mutex);
-        return "DEBUG:Stack is empty.";
+        return ans;
     }
     else
     {
-        std::string ans = "OUTPUT:" + this->head->data;
+        char *ans = (char *)MyMemory::my_malloc(strlen(this->head->data)+10);
+        strcpy(ans, "OUTPUT:");
+        strcat(ans, this->head->data);
         pthread_mutex_unlock(&stack_mutex);
         return ans;
     }
