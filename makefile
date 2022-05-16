@@ -1,32 +1,26 @@
-#!make -f
 
-CXX=clang++-9
-CXXFLAGS=-pthread -std=c++2a
-# OBJECTS=server.cpp stack.c 
 
-test: testC stack
-	$(CC) stack.o test.o -o test
+CC=g++
+FLAGS=-Wall -pthread
 
-testC: 
-	$(CC) test.c -c
+all: ex4
 
-all: server
-	./$^
+ex4: server.o MyMemory.o MyStack.o client
+	$(CC) $(FLAGS)  server.o MyMemory.o MyStack.o -o server
 
-client: clientC
-	./client localhost
-	
-clientC: client.cpp
-	$(CXX) $^ -o client
+server.o: server.cpp
+	$(CC) $(FLAGS) -c server.cpp
 
-server: $(OBJECTS)
-	$(CXX) $(CXXFLAGS) -ltbb $^ -o server
+MyStack.o: MyStack.cpp MyStack.hpp
+	$(CC) $(FLAGS) -c MyStack.cpp
 
-stack: stack.c
-	$(CC) stack.c stack.h -c 
+MyMemory.o: MyMemory.cpp MyMemory.hpp
+	$(CC) $(FLAGS) -c MyMemory.cpp
 
-valgrind: server
-	valgrind $(VALGRIND_FLAGS) ./server
+client: client.cpp
+	$(CC) $(FLAGS) -o client client.cpp MyMemory.cpp 
+
+
 
 clean:
-	rm -f *.o main server ser cli a.out client original stack.h.gch tests test
+	rm -f *.o .a server client ex4 

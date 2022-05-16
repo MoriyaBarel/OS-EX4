@@ -21,7 +21,7 @@
 #include <pthread.h>
 #include "MyStack.hpp"
 
-#define PORT "3511" // the port users will be connecting to
+#define PORT "3512" // the port users will be connecting to
 
 #define BACKLOG 10 // how many pending connections queue will hold
 
@@ -67,7 +67,6 @@ void *T_FUNCTION(void *new_fdcl)
     }
     char *input;
     size_t buf_size = 1024;
-    int check;
     while (true)
     {
         input = (char *)ex4::MyMemory::my_calloc(buf_size, sizeof(char));
