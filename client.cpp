@@ -16,7 +16,7 @@
 #include "MyMemory.hpp"
 using namespace ex4;
 
-#define PORT "3512" // the port client will be connecting to 
+#define PORT "3521" // the port client will be connecting to 
 
 #define MAXDATASIZE 100 // max number of bytes we can get at once 
 
@@ -131,7 +131,7 @@ int main(int argc, char *argv[])
         else 
         {
             buf[numbytes] = '\0';
-            printf("client: received '%s'\n",buf);   
+            printf("%s\n",buf);   
         }
     } 
     

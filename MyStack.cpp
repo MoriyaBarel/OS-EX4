@@ -41,6 +41,7 @@ void ex4::MyStack::POP()
         MyMemory::my_free(temp);
     }
     pthread_mutex_unlock(&stack_mutex);
+    
 }
 
 char *ex4::MyStack::TOP()

@@ -21,7 +21,7 @@
 #include <pthread.h>
 #include "MyStack.hpp"
 
-#define PORT "3512" // the port users will be connecting to
+#define PORT "3521" // the port users will be connecting to
 
 #define BACKLOG 10 // how many pending connections queue will hold
 
@@ -75,16 +75,19 @@ void *T_FUNCTION(void *new_fdcl)
             if (prefix("PUSH", input))
             {
                 char* substr = (char*)ex4::MyMemory::my_malloc(strlen(input));
-                strncpy(substr, input+4, strlen(input)-4);
+                strncpy(substr, input+4, strlen(input));
                 server_stack.PUSH(substr);
             }
             else if (prefix("POP", input))
             {
-                server_stack.POP();
+                 server_stack.POP() ;
+
+                
             }
             else if (prefix("TOP", input))
             {
                 std::cout << server_stack.TOP() << std::endl;
+                send(th_cl,server_stack.TOP(),strlen(server_stack.TOP()),0);
             }
             else if (prefix("QUIT", input))
             {
@@ -92,7 +95,7 @@ void *T_FUNCTION(void *new_fdcl)
                 break;
 
             }else {
-                std::cout <<"receive : " << input <<std::endl ;
+                std::cout <<"received : " << input <<std::endl ;
             }
         }
             
